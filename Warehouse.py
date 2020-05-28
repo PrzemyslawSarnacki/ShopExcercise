@@ -1,6 +1,7 @@
 import csv
 from decimal import Decimal
 
+# wczytanie csv
 warehouse_file = open('Magazyn.csv')
 warehouse_reader = csv.reader(warehouse_file)
 warehouse_data = list(warehouse_reader)
@@ -10,44 +11,57 @@ order_reader = csv.reader(order_file)
 order_data = list(order_reader)
 
 class Warehouse(object):
+    # konstruktor dla "stanów" 
     def __init__(self, product_id, quantity):
         self.product_id = product_id
         self.quantity = quantity
     
+    # pobieramy poszczególnego produktu z pliku Magazyn.csv
     def get_product(self):
+        # przeszukujemy dane w postaci listy
         for product in warehouse_data:
+            # jeśli natrafimy na produkt o danym id to zwracamy
             if product[0] == self.product_id:
                 desired_product = product
                 return desired_product
-
+    
+    # używając metody powyżej zwracamy cenę (jako Decimal - to prawie jak float)
     def get_price(self):
         desired_product = self.get_product()
         print(desired_product)
+        # 2 pozycja to cena w csv
         return (Decimal(desired_product[2]))
     
+    # to samo co wyżej tylko mnożymy przez ilość
     def get_multiplied_price(self):
         desired_product = self.get_product()
         return (Decimal(desired_product[2]) * self.quantity)
     
+    # to samo co get_price tylko zwracamy nazwę (1 pozycja w pliku)
     def get_name(self):
         desired_product = self.get_product()
         return (desired_product[1])
         
+    # to samo co get_price tylko zwracamy podatek (2 i 3 pozycja w pliku )
     def get_tax(self):
         desired_product = self.get_product()
+        # czyli cena*stawkaVAT
         return (Decimal(desired_product[2]) * Decimal(desired_product[3]))
     
+    # to samo co wyżej tylko wymnożone przez ilosc
     def get_multiplied_tax(self):
         desired_product = self.get_product()
         return (Decimal(desired_product[2]) * self.quantity * Decimal(desired_product[3]))
 
+    # samo netto czyli brutto - podatek
     def get_netto(self):
         price = self.get_price()
         tax = self.get_tax()
         return price - tax
 
-
+# klasa do zamówien
 class Order(Warehouse):
+    # zwracamy listę z id produktów z Zamowienie.csv
     def get_ids(self):
         id_list = []
         for product in order_data[1::]:
@@ -55,13 +69,15 @@ class Order(Warehouse):
                 id_list.append((product[0]))
         return id_list
 
+    # to samo co wyżej tylko dla ilości (2 kolumna w pliku - Ilosc)
     def get_quantities(self):
         quantity_list = []
         for product in order_data[1::]:
             if product[1].isnumeric(): 
                 quantity_list.append(int(product[1]))
         return quantity_list
-
+    
+    # zwracamy listę z sumarycznymi cenami (ilosc * cena) używając tych 2 metod wyzej
     def get_prices(self):
         ids = self.get_ids()
         quantities = self.get_quantities()
@@ -73,13 +89,17 @@ class Order(Warehouse):
             prices_list.append(self.quantity * self.get_price())
         return prices_list
 
+# klasa do generowania faktur
 class Invoice(Order):
+    # tutaj sklejamy stringa, który będzie w fakturze
     def generate_invoice(self):
         prices_list = self.get_prices()
+        # poczatkowy string z cenami taka pseudo tabela
         products_and_prices = "Nazwa | Cena |\n"
+        # i tutaj dla wszystkich produktow dodajemy takiego f-stringa
         for i, price in enumerate(prices_list):
             products_and_prices += f"Produkt {i+1} | {str(price)} zl | \n"
-
+        # wszystko do jednego ostatecznie wrzucamy 
         invoice_content = f"""
         Imie \n
         nazwisko\n
@@ -88,8 +108,10 @@ class Invoice(Order):
         """ 
         return invoice_content
 
+    # zapisujemy stringa z metody wyzej do pliku 
     def write_to_file(self):
         invoice_content = self.generate_invoice()
+        # otwieramy (jak nie ma tworzymy), zapisujemy stringa, zamykamy 
         f = open("invoice.txt", "w")
         f.write(invoice_content)
         f.close()
@@ -97,6 +119,9 @@ class Invoice(Order):
 
 product_id = '1'
 quantity = 5
-
+# przez dziedziczenie po Warehouse musimy podać argumenty 
+# mozna napisac init w Invoice by nie podawać lub coś innego wycudowac
+# def __init__(self):
+    # pass
 invoice = Invoice(quantity, product_id)
-print(invoice.write_to_file())
+invoice.write_to_file()
