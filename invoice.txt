@@ -1,0 +1,13 @@
+
+        Imie 
+
+        nazwisko
+
+        Cos tam 
+
+        Ktos tam
+Nazwa | Cena |
+Produkt 1 | 300 zl | 
+Produkt 2 | 400 zl | 
+
+        

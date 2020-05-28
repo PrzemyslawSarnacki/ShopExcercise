@@ -46,11 +46,8 @@ class Warehouse(object):
         tax = self.get_tax()
         return price - tax
 
-class Order(Warehouse):
-    # def __init__(self, quantity, product_id):
-    #     self.quantity = quantity
-    #     self.product_id = product_id
 
+class Order(Warehouse):
     def get_ids(self):
         id_list = []
         for product in order_data[1::]:
@@ -81,24 +78,25 @@ class Invoice(Order):
         prices_list = self.get_prices()
         products_and_prices = "Nazwa | Cena |\n"
         for i, price in enumerate(prices_list):
-            products_and_prices += f"Produkt {i+1} | {str(price)} zł | \n"
+            products_and_prices += f"Produkt {i+1} | {str(price)} zl | \n"
 
-        invoice_content = f"""Imie \n
+        invoice_content = f"""
+        Imie \n
         nazwisko\n
         Cos tam \n
-        Ktos tam\n
-        {
-        products_and_prices
-        }
+        Ktos tam\n{products_and_prices}
         """ 
         return invoice_content
+
+    def write_to_file(self):
+        invoice_content = self.generate_invoice()
+        f = open("invoice.txt", "w")
+        f.write(invoice_content)
+        f.close()
 
 
 product_id = '1'
 quantity = 5
 
-# shopping = Warehouse(product_id, quantity)
-order = Order(quantity, product_id)
-# print(order.get_prices())
 invoice = Invoice(quantity, product_id)
-print(invoice.generate_invoice())
+print(invoice.write_to_file())
