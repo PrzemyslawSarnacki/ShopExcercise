@@ -17,10 +17,7 @@ class Warehouse(object):
     def get_product(self):
         for product in warehouse_data:
             if product[0] == self.product_id:
-                print("self.product_id")
-                print(self.product_id)
                 desired_product = product
-                print(product)
                 return desired_product
 
     def get_price(self):
@@ -58,7 +55,7 @@ class Order(Warehouse):
         id_list = []
         for product in order_data[1::]:
             if product[0].isnumeric(): 
-                id_list.append(int(product[0]))
+                id_list.append((product[0]))
         return id_list
 
     def get_quantities(self):
@@ -71,14 +68,13 @@ class Order(Warehouse):
     def get_prices(self):
         ids = self.get_ids()
         quantities = self.get_quantities()
-        print(ids)
-        # for product_id, quantity in zip(ids, quantities):
-        #     print(f"product_id {product_id} quantity {quantity}")
-        #     self.quantity = quantity
-        #     self.product_id = product_id
-
-        # print(self.product_id)
-        return self.quantity * self.get_price()
+        prices_list = []
+        for product_id, quantity in zip(ids, quantities):
+            print(f"product_id {product_id} quantity {quantity}")
+            self.quantity = quantity
+            self.product_id = product_id
+            prices_list.append(self.quantity * self.get_price())
+        return prices_list
 
 
 product_id = '1'
