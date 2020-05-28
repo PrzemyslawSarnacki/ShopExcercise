@@ -10,9 +10,9 @@ order_reader = csv.reader(order_file)
 order_data = list(order_reader)
 
 class Warehouse(object):
-    # def __init__(self, product_id, quantity):
-    #     self.product_id = product_id
-    #     self.quantity = quantity
+    def __init__(self, product_id, quantity):
+        self.product_id = product_id
+        self.quantity = quantity
     
     def get_product(self):
         for product in warehouse_data:
@@ -47,9 +47,9 @@ class Warehouse(object):
         return price - tax
 
 class Order(Warehouse):
-    def __init__(self, quantity, product_id):
-        self.quantity = quantity
-        self.product_id = product_id
+    # def __init__(self, quantity, product_id):
+    #     self.quantity = quantity
+    #     self.product_id = product_id
 
     def get_ids(self):
         id_list = []
@@ -76,10 +76,29 @@ class Order(Warehouse):
             prices_list.append(self.quantity * self.get_price())
         return prices_list
 
+class Invoice(Order):
+    def generate_invoice(self):
+        prices_list = self.get_prices()
+        products_and_prices = "Nazwa | Cena |\n"
+        for i, price in enumerate(prices_list):
+            products_and_prices += f"Produkt {i+1} | {str(price)} zł | \n"
+
+        invoice_content = f"""Imie \n
+        nazwisko\n
+        Cos tam \n
+        Ktos tam\n
+        {
+        products_and_prices
+        }
+        """ 
+        return invoice_content
+
 
 product_id = '1'
 quantity = 5
 
 # shopping = Warehouse(product_id, quantity)
 order = Order(quantity, product_id)
-print(order.get_prices())
+# print(order.get_prices())
+invoice = Invoice(quantity, product_id)
+print(invoice.generate_invoice())
