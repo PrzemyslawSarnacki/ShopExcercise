@@ -122,6 +122,17 @@ class Order(Warehouse):
             prices_list.append(self.quantity * self.get_price())
         return prices_list
 
+    def get_total_price(self):
+        ids = self.get_ids()
+        quantities = self.get_quantities()
+        total_price = Decimal()
+        for product_id, quantity in zip(ids, quantities):
+            self.quantity = quantity
+            self.product_id = product_id
+            total_price += self.quantity * self.get_price()
+        return total_price
+
+
 
 # klasa do generowania faktur
 class Invoice(Order):
@@ -148,11 +159,13 @@ class Invoice(Order):
         # i tutaj dla wszystkich produktow dodajemy takiego f-stringa
         for i, price in enumerate(prices_list):
             products_and_prices += f"Produkt {i+1} | {str(price)} zl | \n"
+
         # wszystko do jednego ostatecznie wrzucamy 
         invoice_content = f"""
         {self.get_date()} {self.unique_number()}
         {self.client_data}\n
         {products_and_prices}
+        Suma : {self.get_total_price()}
         """ 
         return invoice_content
 
