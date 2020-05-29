@@ -81,6 +81,11 @@ class Warehouse(object):
         # czyli cena*stawkaVAT
         return (Decimal(desired_product[2]) * Decimal(desired_product[3]))
     
+    def get_amount(self):
+        desired_product = self.get_product()
+        # czyli cena*stawkaVAT
+        return (Decimal(desired_product[4]))
+    
     # to samo co wyżej tylko wymnożone przez ilosc
     def get_multiplied_tax(self):
         desired_product = self.get_product()
@@ -92,6 +97,12 @@ class Warehouse(object):
         tax = self.get_tax()
         return price - tax
 
+    def is_available(self, product_quantity):
+        if self.get_amount() > product_quantity:
+            return True
+        else:
+            return False
+
 # klasa do zamówien
 class Order(Warehouse):
     # zwracamy listę z id produktów z Zamowienie.csv
@@ -102,11 +113,12 @@ class Order(Warehouse):
                 id_list.append((product[0]))
         return id_list
 
+
     # to samo co wyżej tylko dla ilości (2 kolumna w pliku - Ilosc)
     def get_quantities(self):
         quantity_list = []
         for product in order_data[1::]:
-            if product[1].isnumeric(): 
+            if product[1].isnumeric():
                 quantity_list.append(int(product[1]))
         return quantity_list
     
