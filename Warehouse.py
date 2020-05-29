@@ -10,6 +10,38 @@ order_file = open('Zamowienie.csv')
 order_reader = csv.reader(order_file)
 order_data = list(order_reader)
 
+
+class Client(object):
+    def __init__(self, name, city, postcode, street, building_number, flat_number="", email):
+        self.name = name
+        self.city = city
+        self.postcode = postcode
+        self.street = street
+        self.building_number = building_number
+        self.flat_number = flat_number
+        self.email = email
+
+
+class IndividualClient(Client):
+    def __init__(self, first_name, surname):
+        super().__init__(name, city, postcode, street, building_number, flat_number, email)
+        self.first_name = first_name
+        self.surname = surname
+
+    def get_individual_client(self):
+        return f"{name}\n {first_name}\n, {surname}\n {city},\n {postcode},
+                \n {street},\n {building_number},\n {flat_number},\n {email}\n"
+
+class CompanyClient(Client):
+    def __init__(self, economic_type, nip):
+        super().__init__(name, city, postcode, street, building_number, flat_number, email)
+        self.economic_type = economic_type 
+        self.nip = nip 
+
+    def get_company_client(self):
+        return f"{name}\n {economic_type}\n, {nip}\n {city},\n {postcode},
+                \n {street},\n {building_number},\n {flat_number},\n {email}\n"
+
 class Warehouse(object):
     # konstruktor dla "stanów" 
     def __init__(self, product_id, quantity):
@@ -92,7 +124,7 @@ class Order(Warehouse):
 # klasa do generowania faktur
 class Invoice(Order):
     # tutaj sklejamy stringa, który będzie w fakturze
-    def generate_invoice(self):
+    def generate_invoice(self, client_data):
         prices_list = self.get_prices()
         # poczatkowy string z cenami taka pseudo tabela
         products_and_prices = "Nazwa | Cena |\n"
@@ -101,10 +133,8 @@ class Invoice(Order):
             products_and_prices += f"Produkt {i+1} | {str(price)} zl | \n"
         # wszystko do jednego ostatecznie wrzucamy 
         invoice_content = f"""
-        Imie \n
-        nazwisko\n
-        Cos tam \n
-        Ktos tam\n{products_and_prices}
+        {client_data}\n
+        {products_and_prices}
         """ 
         return invoice_content
 
