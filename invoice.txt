@@ -1,12 +1,17 @@
 
-        Imie 
+        ('2020/5/29', '23:16') 29/23
+        Nazwa
+ Imie
+, Nazwisko
+ Miasto,
+ 999-99,
+ ul.Ulica,
+ 33,
+ mail@mail.com,
+ 3
 
-        nazwisko
 
-        Cos tam 
-
-        Ktos tam
-Nazwa | Cena |
+        Nazwa | Cena |
 Produkt 1 | 300 zl | 
 Produkt 2 | 400 zl | 
 

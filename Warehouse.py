@@ -1,5 +1,6 @@
 import csv
 from decimal import Decimal
+from datetime import datetime
 
 # wczytanie csv
 warehouse_file = open('Magazyn.csv')
@@ -12,7 +13,7 @@ order_data = list(order_reader)
 
 
 class Client(object):
-    def __init__(self, name, city, postcode, street, building_number, flat_number="", email):
+    def __init__(self, name, city, postcode, street, building_number, email, flat_number=""):
         self.name = name
         self.city = city
         self.postcode = postcode
@@ -23,14 +24,14 @@ class Client(object):
 
 
 class IndividualClient(Client):
-    def __init__(self, first_name, surname):
+    def __init__(self, first_name, surname, name, city, postcode, street, building_number, flat_number, email):
         super().__init__(name, city, postcode, street, building_number, flat_number, email)
         self.first_name = first_name
         self.surname = surname
 
     def get_individual_client(self):
-        return f"{name}\n {first_name}\n, {surname}\n {city},\n {postcode},
-                \n {street},\n {building_number},\n {flat_number},\n {email}\n"
+        return f"{self.name}\n {self.first_name}\n, {self.surname}\n {self.city},\n {self.postcode},\n {self.street},\n {self.building_number},\n {self.flat_number},\n {self.email}\n"
+
 
 class CompanyClient(Client):
     def __init__(self, economic_type, nip):
@@ -39,8 +40,8 @@ class CompanyClient(Client):
         self.nip = nip 
 
     def get_company_client(self):
-        return f"{name}\n {economic_type}\n, {nip}\n {city},\n {postcode},
-                \n {street},\n {building_number},\n {flat_number},\n {email}\n"
+        return f"{self.name}\n {self.economic_type}\n, {self.nip}\n {self.city},\n {self.postcode}, \n {self.street},\n {self.building_number},\n {self.flat_number},\n {self.email}\n"
+
 
 class Warehouse(object):
     # konstruktor dla "stanów" 
@@ -121,10 +122,26 @@ class Order(Warehouse):
             prices_list.append(self.quantity * self.get_price())
         return prices_list
 
+
 # klasa do generowania faktur
 class Invoice(Order):
     # tutaj sklejamy stringa, który będzie w fakturze
-    def generate_invoice(self, client_data):
+    def __init__(self, quantity, product_id, client_data):
+        super().__init__(quantity, product_id)
+        self.client_data = client_data
+
+    def unique_number(self):
+        date = datetime.now()
+        hour_number = f"{date.day}/{date.hour}"
+        return hour_number
+
+    def get_date(self):
+        date = datetime.now()
+        day = f"{date.year}/{date.month}/{date.day}"
+        hour = f"{date.hour}:{date.minute}"
+        return (day, hour)
+
+    def generate_invoice(self):
         prices_list = self.get_prices()
         # poczatkowy string z cenami taka pseudo tabela
         products_and_prices = "Nazwa | Cena |\n"
@@ -133,7 +150,8 @@ class Invoice(Order):
             products_and_prices += f"Produkt {i+1} | {str(price)} zl | \n"
         # wszystko do jednego ostatecznie wrzucamy 
         invoice_content = f"""
-        {client_data}\n
+        {self.get_date()} {self.unique_number()}
+        {self.client_data}\n
         {products_and_prices}
         """ 
         return invoice_content
@@ -153,5 +171,6 @@ quantity = 5
 # mozna napisac init w Invoice by nie podawać lub coś innego wycudowac
 # def __init__(self):
     # pass
-invoice = Invoice(quantity, product_id)
+individual_client = IndividualClient("Imie", "Nazwisko", "Nazwa" ,"Miasto", "999-99", "ul.Ulica", 33, 3, "mail@mail.com")
+invoice = Invoice(quantity, product_id, individual_client.get_individual_client())
 invoice.write_to_file()
