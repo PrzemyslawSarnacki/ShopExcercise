@@ -126,11 +126,13 @@ class Order(Warehouse):
     def get_prices(self):
         ids = self.get_ids()
         quantities = self.get_quantities()
+
         prices_list = []
         for product_id, quantity in zip(ids, quantities):
             print(f"product_id {product_id} quantity {quantity}")
             self.quantity = quantity
             self.product_id = product_id
+            self.update_csv()
             prices_list.append(self.quantity * self.get_price())
         return prices_list
 
@@ -145,13 +147,15 @@ class Order(Warehouse):
         return total_price
     
     def update_amount(self):
-        return self.get_amount() - self.quantity
+        if self.is_available(self.quantity):
+            return self.get_amount() - self.quantity
+        else:
+            return 0
 
     def update_warehouse(self):
         warehouse_data
         desired_product = self.get_product()
         updated = []
-        print(self.update_amount())
         for product in warehouse_data:
             if product == desired_product:
                 product[4] = self.update_amount() 
@@ -212,13 +216,13 @@ class Invoice(Order):
 
 
 product_id = '2'
-quantity = 5
+quantity = 1
 # przez dziedziczenie po Warehouse musimy podać argumenty 
 # mozna napisac init w Invoice by nie podawać lub coś innego wycudowac
 # def __init__(self):
     # pass
-# individual_client = IndividualClient("Imie", "Nazwisko", "Nazwa" ,"Miasto", "999-99", "ul.Ulica", 33, 3, "mail@mail.com")
-# invoice = Invoice(quantity, product_id, individual_client.get_individual_client())
-# invoice.write_to_file()
-warehouse = Order(product_id, quantity)
-warehouse.update_csv()
+individual_client = IndividualClient("Imie", "Nazwisko", "Nazwa" ,"Miasto", "999-99", "ul.Ulica", 33, 3, "mail@mail.com")
+invoice = Invoice(quantity, product_id, individual_client.get_individual_client())
+invoice.write_to_file()
+# warehouse = Order(product_id, quantity)
+# warehouse.update_csv()
