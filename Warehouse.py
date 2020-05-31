@@ -221,8 +221,7 @@ quantity = 1
 # mozna napisac init w Invoice by nie podawać lub coś innego wycudowac
 # def __init__(self):
     # pass
+
 individual_client = IndividualClient("Imie", "Nazwisko", "Nazwa" ,"Miasto", "999-99", "ul.Ulica", 33, 3, "mail@mail.com")
 invoice = Invoice(quantity, product_id, individual_client.get_individual_client())
 invoice.write_to_file()
-# warehouse = Order(product_id, quantity)
-# warehouse.update_csv()
