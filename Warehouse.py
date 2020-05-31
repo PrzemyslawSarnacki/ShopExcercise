@@ -3,14 +3,14 @@ from decimal import Decimal
 from datetime import datetime
 
 # wczytanie csv
-warehouse_file = open('Magazyn.csv')
-warehouse_reader = csv.reader(warehouse_file)
-warehouse_data = list(warehouse_reader)
-
-order_file = open('Zamowienie.csv')
-order_reader = csv.reader(order_file)
-order_data = list(order_reader)
-
+with open('Magazyn.csv') as warehouse_file:
+    warehouse_reader = csv.reader(warehouse_file)
+    warehouse_data = list(warehouse_reader)
+    
+with open('Zamowienie.csv') as order_file:
+    order_reader = csv.reader(order_file)
+    order_data = list(order_reader)
+    
 
 class Client(object):
     def __init__(self, name, city, postcode, street, building_number, email, flat_number=""):
@@ -143,7 +143,28 @@ class Order(Warehouse):
             self.product_id = product_id
             total_price += self.quantity * self.get_price()
         return total_price
+    
+    def update_amount(self):
+        return self.get_amount() - self.quantity
 
+    def update_warehouse(self):
+        warehouse_data
+        desired_product = self.get_product()
+        updated = []
+        print(self.update_amount())
+        for product in warehouse_data:
+            if product == desired_product:
+                product[4] = self.update_amount() 
+            updated.append(product)
+        return updated
+
+    def update_csv(self):
+        updated = self.update_warehouse()
+        with open('Magazyn.csv', 'w', newline='') as csvfile:
+            update_writer = csv.writer(csvfile, delimiter=',')
+            update_writer.writerows(updated)
+                    
+                
 
 
 # klasa do generowania faktur
@@ -190,12 +211,14 @@ class Invoice(Order):
         f.close()
 
 
-product_id = '1'
+product_id = '2'
 quantity = 5
 # przez dziedziczenie po Warehouse musimy podać argumenty 
 # mozna napisac init w Invoice by nie podawać lub coś innego wycudowac
 # def __init__(self):
     # pass
-individual_client = IndividualClient("Imie", "Nazwisko", "Nazwa" ,"Miasto", "999-99", "ul.Ulica", 33, 3, "mail@mail.com")
-invoice = Invoice(quantity, product_id, individual_client.get_individual_client())
-invoice.write_to_file()
+# individual_client = IndividualClient("Imie", "Nazwisko", "Nazwa" ,"Miasto", "999-99", "ul.Ulica", 33, 3, "mail@mail.com")
+# invoice = Invoice(quantity, product_id, individual_client.get_individual_client())
+# invoice.write_to_file()
+warehouse = Order(product_id, quantity)
+warehouse.update_csv()
