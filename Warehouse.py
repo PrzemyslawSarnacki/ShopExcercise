@@ -25,20 +25,24 @@ class Client(object):
 
 class IndividualClient(Client):
     def __init__(self, first_name, surname, name, city, postcode, street, building_number, flat_number, email):
+        # rozszerzamy kostruktor o nowe parametry
         super().__init__(name, city, postcode, street, building_number, flat_number, email)
         self.first_name = first_name
         self.surname = surname
 
+    # zwracamy stringa z parammetrami
     def get_individual_client(self):
         return f"{self.name}\n {self.first_name}\n, {self.surname}\n {self.city},\n {self.postcode},\n {self.street},\n {self.building_number},\n {self.flat_number},\n {self.email}\n"
 
 
 class CompanyClient(Client):
+    # konstruktor dla "stanów" 
     def __init__(self, economic_type, nip):
+        # rozszerzamy kostruktor o nowe parametry
         super().__init__(name, city, postcode, street, building_number, flat_number, email)
         self.economic_type = economic_type 
         self.nip = nip 
-
+    # zwracamy stringa z parammetrami
     def get_company_client(self):
         return f"{self.name}\n {self.economic_type}\n, {self.nip}\n {self.city},\n {self.postcode}, \n {self.street},\n {self.building_number},\n {self.flat_number},\n {self.email}\n"
 
@@ -80,7 +84,7 @@ class Warehouse(object):
         desired_product = self.get_product()
         # czyli cena*stawkaVAT
         return (Decimal(desired_product[2]) * Decimal(desired_product[3]))
-    
+    # zwracamy ilość 
     def get_amount(self):
         desired_product = self.get_product()
         # czyli cena*stawkaVAT
@@ -96,7 +100,7 @@ class Warehouse(object):
         price = self.get_price()
         tax = self.get_tax()
         return price - tax
-
+    # sprawdzamy czy dana ilość jest dostępna na stanie magazynu 
     def is_available(self, product_quantity):
         if self.get_amount() > product_quantity:
             return True
@@ -135,7 +139,7 @@ class Order(Warehouse):
             self.update_csv()
             prices_list.append(self.quantity * self.get_price())
         return prices_list
-
+    # zwracamy cenę całkowitą
     def get_total_price(self):
         ids = self.get_ids()
         quantities = self.get_quantities()
@@ -145,13 +149,13 @@ class Order(Warehouse):
             self.product_id = product_id
             total_price += self.quantity * self.get_price()
         return total_price
-    
+    #aktualizujemy ilość poszczególnego produktu
     def update_amount(self):
         if self.is_available(self.quantity):
             return self.get_amount() - self.quantity
         else:
             return 0
-
+    # aktualizujemy ilość produktów
     def update_warehouse(self):
         warehouse_data
         desired_product = self.get_product()
@@ -161,7 +165,7 @@ class Order(Warehouse):
                 product[4] = self.update_amount() 
             updated.append(product)
         return updated
-
+    # zapisujemy aktualizację produktów do csv
     def update_csv(self):
         updated = self.update_warehouse()
         with open('Magazyn.csv', 'w', newline='') as csvfile:
@@ -177,18 +181,18 @@ class Invoice(Order):
     def __init__(self, quantity, product_id, client_data):
         super().__init__(quantity, product_id)
         self.client_data = client_data
-
+    # generujemy pseudo unikalny numer (tak można było użyć biblioteki random ...)
     def unique_number(self):
         date = datetime.now()
         hour_number = f"{date.day}/{date.hour}"
         return hour_number
-
+    # generujemy datę (od teraz) zwracamy dzień godzinę jako tuple
     def get_date(self):
         date = datetime.now()
         day = f"{date.year}/{date.month}/{date.day}"
         hour = f"{date.hour}:{date.minute}"
         return (day, hour)
-
+    # generujemy fakturę
     def generate_invoice(self):
         prices_list = self.get_prices()
         # poczatkowy string z cenami taka pseudo tabela
